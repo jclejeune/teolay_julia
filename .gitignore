@@ -28,6 +28,9 @@ JuliaLocalPreferences.toml
 /test/results_*.dat
 /test/deps
 
+/logs
+/logs/*.log
+
 *.expmap
 *.exe
 *.dll
