@@ -29,7 +29,7 @@ JuliaLocalPreferences.toml
 /test/deps
 
 /logs
-/logs/*.log
+
 
 *.expmap
 *.exe
