@@ -34,15 +34,19 @@ end
 
 function image_to_cairo_surface(img::Array)
     h, w = size(img)
-    buf[i, j] = (UInt32(0xFF) << 24) | (r << 16) | (g << 8) | b
-        
+    
+    # Cairo attend un buffer row-major, stride = w * sizeof(UInt32)
+    # On crée un buffer (w, h) que Cairo interprétera correctement
+    buf = Matrix{UInt32}(undef, w, h)
+    
     Threads.@threads for i in 1:h
         for j in 1:w
             px = img[i, j]
             r = round(UInt32, clamp(Float64(red(px)), 0.0, 1.0) * 255)
             g = round(UInt32, clamp(Float64(green(px)), 0.0, 1.0) * 255)
             b = round(UInt32, clamp(Float64(blue(px)), 0.0, 1.0) * 255)
-            buf[i, j] = (r << 16) | (g << 8) | b
+            # Cairo ARGB32 = 0xAARRGGBB en little-endian → stocké BGRA
+            buf[j, i] = (UInt32(0xFF) << 24) | (r << 16) | (g << 8) | b
         end
     end
     
