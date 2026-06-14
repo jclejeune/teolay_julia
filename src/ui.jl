@@ -88,18 +88,22 @@ function create_window()
         end
 
         p = params[]
-        processed = Processor.process_image(ImageEngine.get_preview(image_data[]), p)
-        pix, data = GtkImageBridge.image_to_pixbuf(processed)
-        preview_pix[] = (pix, data)  # garde data vivant
 
-        Gtk.g_idle_add() do
-            try
-                set_gtk_property!(img_widget, :pixbuf, pix)
-            catch e
-                @warn "Erreur set pixbuf" exception=(e, catch_backtrace())
+        Threads.@spawn begin
+            processed = @time Processor.process_image(ImageEngine.get_preview(image_data[]), p)
+            pix, data = GtkImageBridge.image_to_pixbuf(processed)
+            preview_pix[] = (pix, data)
+
+            Gtk.g_idle_add() do
+                try
+                    set_gtk_property!(img_widget, :pixbuf, pix)
+                catch e
+                    @warn "Erreur set pixbuf" exception=(e, catch_backtrace())
+                end
+                return false
             end
-            return false
         end
+
         return nothing
     end
 

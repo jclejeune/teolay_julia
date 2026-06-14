@@ -6,7 +6,7 @@ using ImageTransformations
 
 export load_image, get_preview, image_to_cairo_surface
 
-const PREVIEW_WIDTH = 800
+const PREVIEW_WIDTH = 600
 
 mutable struct ImageData
     original::Array
